@@ -39,6 +39,20 @@ openspec list --json
   `openspec instructions <artifact-id> --change "<name>" --json` for each
   one, writing to `resolvedOutputPath`. Stop once `tasks` is `done` —
   that's all this step needs; implementation starts next.
+
+  **Branch for the new phase.** Each roadmap item maps to a phase of
+  `initial_plan.md`, and each phase gets its own branch so a human reviewing
+  later has sane-sized chunks. When you create a new change, also create the
+  matching branch off the current one:
+
+  ```bash
+  git checkout -b feat/phase-<N>-<short-name>
+  ```
+
+  e.g. roadmap item 2 (`add-library-scan-and-cli`) → `feat/phase-2-library-cli`.
+  If that branch already exists, switch to it instead of recreating it.
+  Check `git status` first and never switch branches with uncommitted work
+  in the tree — commit it or stop and report.
 - If **every** roadmap item is already archived, the roadmap is complete.
   Report that and stop — do not invent new work.
 
