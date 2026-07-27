@@ -18,4 +18,4 @@
 ## 4. Verify
 
 - [x] 4.1 Run `venv\Scripts\python.exe -m pytest` and confirm the whole suite passes with no audio device required
-- [ ] 4.2 Run the CLI by hand against a directory containing `assets/test_tone.wav` and confirm listing, `play 1`, `pause`, `resume`, `stop`, and `quit` all behave (record observed output)
+- [x] 4.2 Run the CLI by hand against a directory containing `assets/test_tone.wav` and confirm listing, `play 1`, `pause`, `resume`, `stop`, and `quit` all behave (record observed output)
