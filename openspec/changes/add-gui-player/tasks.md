@@ -6,10 +6,10 @@
 
 ## 2. Window
 
-- [ ] 2.1 Create `src/ui/app.py` with a `MusicAppWindow` building the customtkinter layout: playlist sidebar on the left, now-playing label and transport buttons (previous, play/pause, stop, next) on the right
-- [ ] 2.2 Wire every button and the list selection to the corresponding `PlayerController` method, and refresh the now-playing label after each action
-- [ ] 2.3 Handle the empty-library case in the window: show the empty message and disable transport controls
-- [ ] 2.4 Add `tests/ui/test_app.py` patching `src.ui.app.ctk` to verify the window constructs, binds each control to the right controller method, and disables controls for an empty library — all without a display
+- [x] 2.1 Create `src/ui/app.py` with a `MusicAppWindow` building the customtkinter layout: playlist sidebar on the left, now-playing label and transport buttons (previous, play/pause, stop, next) on the right
+- [x] 2.2 Wire every button and the list selection to the corresponding `PlayerController` method, and refresh the now-playing label after each action
+- [x] 2.3 Handle the empty-library case in the window: show the empty message and disable transport controls
+- [x] 2.4 Add `tests/ui/test_app.py` patching `src.ui.app.ctk` to verify the window constructs, binds each control to the right controller method, and disables controls for an empty library — all without a display
 
 ## 3. Entry point
 
