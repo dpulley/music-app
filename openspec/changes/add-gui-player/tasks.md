@@ -13,10 +13,10 @@
 
 ## 3. Entry point
 
-- [ ] 3.1 Add `src/ui/__main__.py` so `python -m src.ui <directory>` scans the directory and opens the window, reusing `scan_directory` and reporting an invalid directory the same way the CLI does
-- [ ] 3.2 Add entry-point tests covering the invalid-directory and empty-directory paths with the window mocked
+- [x] 3.1 Add `src/ui/__main__.py` so `python -m src.ui <directory>` scans the directory and opens the window, reusing `scan_directory` and reporting an invalid directory the same way the CLI does
+- [x] 3.2 Add entry-point tests covering the invalid-directory and empty-directory paths with the window mocked
 
 ## 4. Verify
 
-- [ ] 4.1 Run `venv\Scripts\python.exe -m pytest` and confirm the whole suite passes with no audio device and no display required
+- [x] 4.1 Run `venv\Scripts\python.exe -m pytest` and confirm the whole suite passes with no audio device and no display required
 - [ ] 4.2 Launch the real window via the `run-music-app` skill against `assets/`, confirm the track list, transport buttons, and now-playing display work, and record what was observed (needs a human at the screen — flag for review rather than assuming)
