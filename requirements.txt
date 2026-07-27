@@ -1,0 +1,4 @@
+just-playback
+mutagen
+customtkinter
+pytest
