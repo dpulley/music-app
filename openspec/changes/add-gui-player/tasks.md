@@ -19,4 +19,4 @@
 ## 4. Verify
 
 - [x] 4.1 Run `venv\Scripts\python.exe -m pytest` and confirm the whole suite passes with no audio device and no display required
-- [ ] 4.2 Launch the real window via the `run-music-app` skill against `assets/`, confirm the track list, transport buttons, and now-playing display work, and record what was observed (needs a human at the screen — flag for review rather than assuming)
+- [x] 4.2 Launch the real window via the `run-music-app` skill against `assets/`, confirm the track list, transport buttons, and now-playing display work, and record what was observed (needs a human at the screen — flag for review rather than assuming)
