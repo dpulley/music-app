@@ -11,11 +11,11 @@
 
 ## 3. CLI
 
-- [ ] 3.1 Create `src/cli.py` with an argparse entry point taking a directory argument, scanning it, printing a 1-based numbered track list, and exiting non-zero with a message on an invalid directory or cleanly on an empty one
-- [ ] 3.2 Implement the command loop: `list`, `play N`, `pause`, `resume`, `stop`, `quit`, driving an `AudioPlayer`, reporting "no track loaded" for transport commands issued too early, and catching per-track load failures without exiting the loop
-- [ ] 3.3 Add `tests/test_cli.py` mocking `AudioPlayer` and driving the command loop with scripted input: play by number, out-of-range number, transport before load, load failure, and quit
+- [x] 3.1 Create `src/cli.py` with an argparse entry point taking a directory argument, scanning it, printing a 1-based numbered track list, and exiting non-zero with a message on an invalid directory or cleanly on an empty one
+- [x] 3.2 Implement the command loop: `list`, `play N`, `pause`, `resume`, `stop`, `quit`, driving an `AudioPlayer`, reporting "no track loaded" for transport commands issued too early, and catching per-track load failures without exiting the loop
+- [x] 3.3 Add `tests/test_cli.py` mocking `AudioPlayer` and driving the command loop with scripted input: play by number, out-of-range number, transport before load, load failure, and quit
 
 ## 4. Verify
 
-- [ ] 4.1 Run `venv\Scripts\python.exe -m pytest` and confirm the whole suite passes with no audio device required
+- [x] 4.1 Run `venv\Scripts\python.exe -m pytest` and confirm the whole suite passes with no audio device required
 - [ ] 4.2 Run the CLI by hand against a directory containing `assets/test_tone.wav` and confirm listing, `play 1`, `pause`, `resume`, `stop`, and `quit` all behave (record observed output)
