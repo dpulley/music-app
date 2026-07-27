@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.ui.app import TRANSPORT_LABELS, MusicAppWindow
+from src.ui.app import REFRESH_INTERVAL_MS, TRANSPORT_LABELS, MusicAppWindow
 
 TRACKS = [Path("music/one.mp3"), Path("music/two.wav")]
 
@@ -22,7 +22,12 @@ def controller():
     mock = MagicMock()
     mock.is_empty = False
     mock.tracks = TRACKS
+    mock.visible_tracks = TRACKS
+    mock.visible_indices.return_value = list(range(len(TRACKS)))
+    mock.describe.side_effect = lambda track: track.stem
     mock.now_playing = "No track loaded"
+    mock.position_text = "0:00 / 0:00"
+    mock.progress_fraction = 0.0
     return mock
 
 
@@ -31,13 +36,22 @@ def empty_controller():
     mock = MagicMock()
     mock.is_empty = True
     mock.tracks = []
+    mock.visible_tracks = []
+    mock.visible_indices.return_value = []
     mock.now_playing = "No tracks found"
+    mock.position_text = "0:00 / 0:00"
+    mock.progress_fraction = 0.0
     return mock
 
 
 @pytest.fixture
 def window(controller):
-    with patch("src.ui.app.ctk"):
+    # A patched ctk hands back the same return_value for every CTkLabel call,
+    # which would make the now-playing and position labels the same object and
+    # any assertion about one of them meaningless. Give each widget call its
+    # own mock so the two labels stay distinguishable.
+    with patch("src.ui.app.ctk") as mock_ctk:
+        mock_ctk.CTkLabel.side_effect = lambda *args, **kwargs: MagicMock()
         yield MusicAppWindow(controller=controller)
 
 
@@ -170,3 +184,143 @@ def test_mainloop_runs_the_toolkit_loop(window):
     window.mainloop()
 
     window.root.mainloop.assert_called_once()
+
+
+# -- progress and seeking ------------------------------------------------
+
+
+def test_progress_reflects_controller_fraction(window, controller):
+    controller.progress_fraction = 0.42
+
+    window.refresh()
+
+    window.progress.set.assert_called_with(0.42)
+
+
+def test_position_label_shows_elapsed_and_total(window, controller):
+    controller.position_text = "1:05 / 3:20"
+
+    window.refresh()
+
+    window.position_label.configure.assert_called_with(text="1:05 / 3:20")
+
+
+def test_releasing_the_handle_seeks_to_that_fraction(window, controller):
+    window.progress.get.return_value = 0.75
+
+    window.on_drag_end()
+
+    controller.seek_fraction.assert_called_once_with(0.75)
+
+
+def test_dragging_does_not_seek_on_every_pixel(window, controller):
+    """Seeking per drag event would hammer the engine; release is enough."""
+    window.on_drag_start()
+    window.on_drag(0.3)
+    window.on_drag(0.6)
+
+    controller.seek_fraction.assert_not_called()
+
+
+def test_refresh_leaves_the_handle_alone_while_dragging(window, controller):
+    window.on_drag_start()
+    window.progress.set.reset_mock()
+    controller.progress_fraction = 0.9
+
+    window.refresh()
+
+    window.progress.set.assert_not_called()
+
+
+def test_refresh_resumes_updating_after_the_drag_ends(window, controller):
+    window.on_drag_start()
+    window.on_drag_end()
+    window.progress.set.reset_mock()
+    controller.progress_fraction = 0.9
+
+    window.refresh()
+
+    window.progress.set.assert_called_with(0.9)
+
+
+# -- periodic refresh ----------------------------------------------------
+
+
+def test_refresh_is_scheduled_on_the_tk_loop(window):
+    """after(), never a thread - Tk isn't thread-safe."""
+    window.root.after.assert_called_with(
+        REFRESH_INTERVAL_MS, window._on_tick
+    )
+
+
+def test_each_tick_reschedules_itself(window, controller):
+    window.root.after.reset_mock()
+
+    window._on_tick()
+
+    window.root.after.assert_called_once_with(REFRESH_INTERVAL_MS, window._on_tick)
+
+
+# -- search --------------------------------------------------------------
+
+
+def test_typing_filters_the_sidebar(window, controller):
+    window.search_entry.get.return_value = "blue"
+    controller.visible_tracks = [TRACKS[0]]
+    controller.visible_indices.return_value = [0]
+
+    window.on_search()
+
+    controller.search.assert_called_once_with("blue")
+    assert len(window.track_buttons) == 1
+
+
+def test_clearing_the_search_restores_every_row(window, controller):
+    window.search_entry.get.return_value = "blue"
+    controller.visible_tracks = [TRACKS[0]]
+    controller.visible_indices.return_value = [0]
+    window.on_search()
+
+    window.search_entry.get.return_value = ""
+    controller.visible_tracks = TRACKS
+    controller.visible_indices.return_value = [0, 1]
+    window.on_search()
+
+    assert len(window.track_buttons) == len(TRACKS)
+
+
+def test_filtered_rows_still_select_the_right_track(controller):
+    """Row 0 of a filtered list may be playlist index 1."""
+    controller.visible_tracks = [TRACKS[1]]
+    controller.visible_indices.return_value = [1]
+
+    with patch("src.ui.app.ctk") as mock_ctk:
+        window = MusicAppWindow(controller=controller)
+
+        commands = [
+            call.kwargs["command"]
+            for call in mock_ctk.CTkButton.call_args_list
+            if call.kwargs.get("anchor") == "w"
+        ]
+
+    commands[0]()
+
+    controller.select.assert_called_once_with(1)
+
+
+# -- metadata labels -----------------------------------------------------
+
+
+def test_sidebar_rows_use_metadata_descriptions(controller):
+    controller.describe.side_effect = lambda track: f"Band - {track.stem}"
+
+    with patch("src.ui.app.ctk") as mock_ctk:
+        MusicAppWindow(controller=controller)
+
+        labels = [
+            call.kwargs["text"]
+            for call in mock_ctk.CTkButton.call_args_list
+            if call.kwargs.get("anchor") == "w"
+        ]
+
+    assert labels == ["Band - one", "Band - two"]
