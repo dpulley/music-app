@@ -5,9 +5,9 @@
 
 ## 2. Playlist model
 
-- [ ] 2.1 Create `src/database/playlist.py` with a `Playlist` class holding an ordered track list plus a cursor, exposing `current`, `next()`, `previous()`, `select(index)`, `__len__`, and iteration
-- [ ] 2.2 Implement end-of-list behavior: `next()`/`previous()` clamp and return `None` at the ends, `select()` raises `IndexError` out of range leaving the cursor unchanged, and an empty playlist reports `current is None` without raising
-- [ ] 2.3 Add `tests/database/test_playlist.py` covering navigation, clamping at both ends, select by index, out-of-range select, and the empty-playlist case
+- [x] 2.1 Create `src/database/playlist.py` with a `Playlist` class holding an ordered track list plus a cursor, exposing `current`, `next()`, `previous()`, `select(index)`, `__len__`, and iteration
+- [x] 2.2 Implement end-of-list behavior: `next()`/`previous()` clamp and return `None` at the ends, `select()` raises `IndexError` out of range leaving the cursor unchanged, and an empty playlist reports `current is None` without raising
+- [x] 2.3 Add `tests/database/test_playlist.py` covering navigation, clamping at both ends, select by index, out-of-range select, and the empty-playlist case
 
 ## 3. CLI
 
